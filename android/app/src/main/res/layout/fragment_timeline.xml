@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical">
+
+    <!-- Zoom Controls -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="@dimen/spacing_sm">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/tab_timeline"
+            android:textAppearance="@style/TextAppearance.VideoEditor.Subtitle"
+            android:textColor="@color/text_primary" />
+
+        <ImageButton
+            android:id="@+id/btnZoomOut"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/tooltip_zoom_out"
+            android:src="@drawable/ic_zoom_out"
+            app:tint="@color/text_secondary" />
+
+        <TextView
+            android:id="@+id/tvZoomLevel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/spacing_sm"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            tools:text="100%" />
+
+        <ImageButton
+            android:id="@+id/btnZoomIn"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/tooltip_zoom_in"
+            android:src="@drawable/ic_zoom_in"
+            app:tint="@color/text_secondary" />
+
+    </LinearLayout>
+
+    <!-- Timeline ScrollView -->
+    <HorizontalScrollView
+        android:id="@+id/timelineScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <com.videoeditor.app.presentation.ui.editor.TimelineView
+            android:id="@+id/timelineView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/timeline_background" />
+
+    </HorizontalScrollView>
+
+</LinearLayout>

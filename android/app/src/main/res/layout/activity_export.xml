@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".presentation.ui.export.ExportActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/surface"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_close"
+        app:navigationIconTint="@color/on_surface"
+        app:title="@string/title_export"
+        app:titleTextColor="@color/text_primary" />
+
+    <!-- Preview -->
+    <FrameLayout
+        android:id="@+id/previewContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/surface_variant"
+        app:layout_constraintDimensionRatio="16:9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <ImageView
+            android:id="@+id/ivPreview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
+
+        <!-- Progress Overlay -->
+        <FrameLayout
+            android:id="@+id/progressOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/overlay_dark"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="false"
+                    android:max="100"
+                    android:progress="0"
+                    android:progressTint="@color/primary" />
+
+                <TextView
+                    android:id="@+id/tvProgressPercent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    tools:text="45%" />
+
+                <TextView
+                    android:id="@+id/tvProgressStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:text="@string/export_progress"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </FrameLayout>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/btnExport"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/previewContainer">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_md">
+
+            <!-- Quality -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/export_quality"
+                android:textAppearance="@style/TextAppearance.VideoEditor.Subtitle"
+                android:textColor="@color/text_primary" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupQuality"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipQualityLow"
+                    style="@style/Widget.VideoEditor.Chip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/quality_low" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipQualityMedium"
+                    style="@style/Widget.VideoEditor.Chip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/quality_medium" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipQualityHigh"
+                    style="@style/Widget.VideoEditor.Chip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/quality_high" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipQualityUltra"
+                    style="@style/Widget.VideoEditor.Chip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/quality_ultra" />
+
+            </com.google.android.material.chip.ChipGroup>
+
+            <!-- Format -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:text="@string/export_format"
+                android:textAppearance="@style/TextAppearance.VideoEditor.Subtitle"
+                android:textColor="@color/text_primary" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupFormat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFormatMp4"
+                    style="@style/Widget.VideoEditor.Chip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/format_mp4" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFormatWebm"
+                    style="@style/Widget.VideoEditor.Chip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/format_webm" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFormatGif"
+                    style="@style/Widget.VideoEditor.Chip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/format_gif" />
+
+            </com.google.android.material.chip.ChipGroup>
+
+            <!-- Frame Rate -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:text="@string/export_fps"
+                android:textAppearance="@style/TextAppearance.VideoEditor.Subtitle"
+                android:textColor="@color/text_primary" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupFps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFps24"
+                    style="@style/Widget.VideoEditor.Chip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="24 fps" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFps30"
+                    style="@style/Widget.VideoEditor.Chip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="30 fps" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFps60"
+                    style="@style/Widget.VideoEditor.Chip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="60 fps" />
+
+            </com.google.android.material.chip.ChipGroup>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- Export Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnExport"
+        style="@style/Widget.VideoEditor.Button.Primary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_md"
+        android:text="@string/export_start"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

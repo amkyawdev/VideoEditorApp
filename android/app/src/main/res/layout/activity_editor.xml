@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".presentation.ui.editor.EditorActivity">
+
+    <!-- Top Bar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/surface"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_back"
+        app:navigationIconTint="@color/on_surface"
+        app:title="@string/title_editor"
+        app:titleTextColor="@color/text_primary">
+
+        <ImageButton
+            android:id="@+id/btnUndo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="@dimen/spacing_xs"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/action_undo"
+            android:src="@drawable/ic_undo"
+            app:tint="@color/text_secondary" />
+
+        <ImageButton
+            android:id="@+id/btnRedo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="end"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/action_redo"
+            android:src="@drawable/ic_redo"
+            app:tint="@color/text_secondary" />
+
+    </com.google.android.material.appbar.MaterialToolbar>
+
+    <!-- Video Preview -->
+    <FrameLayout
+        android:id="@+id/previewContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/surface_variant"
+        app:layout_constraintDimensionRatio="16:9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <androidx.media3.ui.PlayerView
+            android:id="@+id/playerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:controller_layout_id="@layout/exo_player_control_view"
+            app:show_buffering="when_playing"
+            app:use_controller="false" />
+
+        <!-- Play/Pause overlay -->
+        <ImageButton
+            android:id="@+id/btnPlayPause"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_button_primary"
+            android:contentDescription="@string/cd_play_pause"
+            android:padding="@dimen/spacing_md"
+            android:src="@drawable/ic_play"
+            app:tint="@color/on_primary" />
+
+        <!-- Time display -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@color/overlay_dark"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="@dimen/spacing_sm">
+
+            <TextView
+                android:id="@+id/tvCurrentTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_primary"
+                android:textSize="12sp"
+                tools:text="00:00:00" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tvTotalTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                tools:text="00:02:30" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <!-- Tab Layout -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        style="@style/Widget.VideoEditor.TabLayout"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:background="@color/surface"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/previewContainer">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/ic_video"
+            android:text="@string/tab_timeline" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/ic_subtitles"
+            android:text="@string/tab_subtitles" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/ic_audio"
+            android:text="@string/tab_audio" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/ic_effects"
+            android:text="@string/tab_effects" />
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <!-- ViewPager for tabs -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomToolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout" />
+
+    <!-- Bottom Toolbar -->
+    <LinearLayout
+        android:id="@+id/bottomToolbar"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/bottom_bar_height"
+        android:background="@color/surface"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/spacing_sm"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- Add Clip -->
+        <ImageButton
+            android:id="@+id/btnAddClip"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginHorizontal="@dimen/spacing_xs"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/action_add_clip"
+            android:src="@drawable/ic_add"
+            app:tint="@color/on_surface" />
+
+        <!-- Trim -->
+        <ImageButton
+            android:id="@+id/btnTrim"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginHorizontal="@dimen/spacing_xs"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/action_trim"
+            android:src="@drawable/ic_trim"
+            app:tint="@color/on_surface" />
+
+        <!-- Split -->
+        <ImageButton
+            android:id="@+id/btnSplit"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginHorizontal="@dimen/spacing_xs"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/action_split"
+            android:src="@drawable/ic_split"
+            app:tint="@color/on_surface" />
+
+        <!-- Delete -->
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginHorizontal="@dimen/spacing_xs"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/action_delete"
+            android:src="@drawable/ic_delete"
+            app:tint="@color/error" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Export Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnExport"
+            style="@style/Widget.VideoEditor.Button.Primary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_export"
+            app:icon="@drawable/ic_export"
+            app:iconTint="@color/on_primary" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
