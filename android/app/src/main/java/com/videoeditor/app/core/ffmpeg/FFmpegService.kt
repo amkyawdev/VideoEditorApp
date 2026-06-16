@@ -1,7 +1,8 @@
 package com.videoeditor.app.core.ffmpeg
 
-import com.arthenica.mobileffmpeg.Config
-import com.arthenica.mobileffmpeg.FFmpeg
+import com.arthenica.ffmpegkit.FFmpegKit
+import com.arthenica.ffmpegkit.FFmpegKitConfig
+import com.arthenica.ffmpegkit.ReturnCode
 import com.videoeditor.app.core.constants.FFmpegConstants
 import com.videoeditor.app.domain.model.Subtitle
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +15,7 @@ import javax.inject.Singleton
 class FFmpegService @Inject constructor() {
 
     init {
-        Config.enableLogCallback { logMessage ->
+        FFmpegKitConfig.enableLogCallback { logMessage ->
             android.util.Log.d("FFmpeg", logMessage.text)
         }
     }
@@ -212,8 +213,9 @@ class FFmpegService @Inject constructor() {
     }
 
     private fun executeCommand(args: Array<String>): Int {
-        val returnCode = FFmpeg.execute(args)
-        if (returnCode != Config.RETURN_CODE_SUCCESS) {
+        val session = FFmpegKit.execute(args)
+        val returnCode = session.returnCode
+        if (!ReturnCode.isSuccess(returnCode)) {
             throw RuntimeException("FFmpeg execution failed with return code: $returnCode")
         }
         return returnCode
