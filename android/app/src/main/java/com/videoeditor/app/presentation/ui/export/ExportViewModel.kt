@@ -1,5 +1,6 @@
 package com.videoeditor.app.presentation.ui.export
 
+import android.app.Application
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import com.videoeditor.app.core.utils.FileUtils
 import com.videoeditor.app.domain.model.*
 import com.videoeditor.app.domain.repository.ProjectRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -21,6 +23,7 @@ class ExportViewModel @Inject constructor(
     private val projectRepository: ProjectRepository,
     private val renderEngine: RenderEngine,
     private val fileUtils: FileUtils,
+    @ApplicationContext private val application: Application,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -69,7 +72,7 @@ class ExportViewModel @Inject constructor(
 
         exportJob = viewModelScope.launch {
             _isExporting.value = true
-            _progress.value = 0
+            _progress.value = 0f
             _status.value = "Preparing export..."
 
             try {
@@ -97,17 +100,17 @@ class ExportViewModel @Inject constructor(
                     settings = _exportSettings.value,
                     outputPath = outputPath,
                     progressCallback = { p ->
-                        _progress.value = (p * 100).toInt()
+                        _progress.value = p
                     }
                 )
 
-                _progress.value = 100
+                _progress.value = 100f
                 _status.value = "Export complete!"
                 _exportComplete.value = result
 
             } catch (e: Exception) {
                 _error.value = e.message ?: "Export failed"
-                _progress.value = -1
+                _progress.value = -1f
             } finally {
                 _isExporting.value = false
             }
@@ -117,21 +120,14 @@ class ExportViewModel @Inject constructor(
     fun cancelExport() {
         exportJob?.cancel()
         _isExporting.value = false
-        _progress.value = -1
+        _progress.value = -1f
         _status.value = ""
     }
 
     private fun generateOutputPath(): String {
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val extension = _exportSettings.value.format.extension
-        val exportDir = fileUtils.getExportDirectory(VideoEditApp.instance)
+        val exportDir = fileUtils.getExportDirectory(application)
         return File(exportDir, "video_$timestamp.$extension").absolutePath
-    }
-}
-
-private class VideoEditApp {
-    companion object {
-        lateinit var instance: android.app.Application
-            private set
     }
 }

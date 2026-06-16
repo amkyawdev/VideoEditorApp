@@ -42,7 +42,7 @@ class ExportActivity : AppCompatActivity() {
 
     private fun setupToolbar() {
         binding.toolbar.setNavigationOnClickListener {
-            if (viewModel.isExporting.value == true) {
+            if (viewModel.isExporting.value) {
                 showCancelDialog()
             } else {
                 finish()
@@ -62,7 +62,7 @@ class ExportActivity : AppCompatActivity() {
             }
             viewModel.setQuality(quality)
         }
-
+    
         // Format selection
         binding.chipGroupFormat.setOnCheckedStateChangeListener { _, checkedIds ->
             val format = when (checkedIds.firstOrNull()) {
@@ -73,7 +73,7 @@ class ExportActivity : AppCompatActivity() {
             }
             viewModel.setFormat(format)
         }
-
+    
         // FPS selection
         binding.chipGroupFps.setOnCheckedStateChangeListener { _, checkedIds ->
             val fps = when (checkedIds.firstOrNull()) {
@@ -84,7 +84,7 @@ class ExportActivity : AppCompatActivity() {
             }
             viewModel.setFps(fps)
         }
-
+    
         // Export button
         binding.btnExport.setOnClickListener {
             viewModel.startExport()
@@ -94,10 +94,10 @@ class ExportActivity : AppCompatActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             viewModel.progress.collectLatest { progress ->
-                if (progress >= 0) {
+                if (progress >= 0f) {
                     binding.progressOverlay.visibility = View.VISIBLE
-                    binding.progressBar.progress = progress
-                    binding.tvProgressPercent.text = "$progress%"
+                    binding.progressBar.progress = (progress * 100).toInt()
+                    binding.tvProgressPercent.text = "${(progress * 100).toInt()}%"
                 } else {
                     binding.progressOverlay.visibility = View.GONE
                 }
