@@ -277,12 +277,27 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ---
 
+## 👨‍💻 Author / Admin
+
+| Field | Information |
+|-------|-------------|
+| **Deploy Name** | AmkyawDev |
+| **Admin** | Aung Myo Kyaw |
+| **Country** | Myanmar 🇲🇲 |
+| **Location** | Naypyidaw |
+| **Phone** | 09677740154 |
+
+---
+
 ## 📧 Contact
 
-For questions and support, please open an issue on GitHub.
+For questions and support, please contact:
+
+- **GitHub:** [@amkyawdev](https://github.com/amkyawdev)
+- **Phone:** 09677740154
 
 ---
 
 <p align="center">
-  <strong>Made with ❤️ and Kotlin</strong>
+  <strong>© 2024 AmkyawDev | Made with ❤️ and Kotlin</strong>
 </p> 
