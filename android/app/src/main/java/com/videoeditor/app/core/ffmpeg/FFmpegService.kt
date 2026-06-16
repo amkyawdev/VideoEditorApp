@@ -1,13 +1,9 @@
 package com.videoeditor.app.core.ffmpeg
 
-import com.arthenica.ffmpegkit.FFmpegKit
-import com.arthenica.ffmpegkit.FFmpegKitConfig
-import com.arthenica.ffmpegkit.FFmpegSession
-import com.arthenica.ffmpegkit.FFprobeKit
-import com.arthenica.ffmpegkit.ReturnCode
+import com.arthenica.mobileffmpeg.Config
+import com.arthenica.mobileffmpeg.FFmpeg
 import com.videoeditor.app.core.constants.FFmpegConstants
 import com.videoeditor.app.domain.model.Subtitle
-import com.videoeditor.app.domain.model.ExportSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -16,6 +12,12 @@ import javax.inject.Singleton
 
 @Singleton
 class FFmpegService @Inject constructor() {
+
+    init {
+        Config.enableLogCallback { logMessage ->
+            android.util.Log.d("FFmpeg", logMessage.text)
+        }
+    }
 
     suspend fun trimVideo(
         inputPath: String,
@@ -27,9 +29,17 @@ class FFmpegService @Inject constructor() {
         val startSec = startMs / 1000.0
         val durationSec = (endMs - startMs) / 1000.0
 
-        val command = "-y -ss $startSec -i \"$inputPath\" -t $durationSec " +
-                "-c:v ${FFmpegConstants.VIDEO_CODEC} -preset ultrafast " +
-                "-c:a aac -b:a 128k \"$output\""
+        val command = arrayOf(
+            "-y",
+            "-ss", startSec.toString(),
+            "-i", inputPath,
+            "-t", durationSec.toString(),
+            "-c:v", FFmpegConstants.VIDEO_CODEC,
+            "-preset", "ultrafast",
+            "-c:a", "aac",
+            "-b:a", "128k",
+            output
+        )
 
         executeCommand(command)
         output
@@ -47,9 +57,17 @@ class FFmpegService @Inject constructor() {
         val concatFile = File.createTempFile("concat", ".txt")
         concatFile.writeText(inputPaths.joinToString("\n") { "file '$it'" })
 
-        val command = "-y -f concat -safe 0 -i \"${concatFile.absolutePath}\" " +
-                "-c:v ${FFmpegConstants.VIDEO_CODEC} -preset ultrafast " +
-                "-c:a aac -b:a 128k \"$outputPath\""
+        val command = arrayOf(
+            "-y",
+            "-f", "concat",
+            "-safe", "0",
+            "-i", concatFile.absolutePath,
+            "-c:v", FFmpegConstants.VIDEO_CODEC,
+            "-preset", "ultrafast",
+            "-c:a", "aac",
+            "-b:a", "128k",
+            outputPath
+        )
 
         executeCommand(command)
         concatFile.delete()
@@ -63,10 +81,18 @@ class FFmpegService @Inject constructor() {
         audioVolume: Float,
         outputPath: String
     ): String = withContext(Dispatchers.IO) {
-        val audioStartSec = audioStartMs / 1000.0
-        val command = "-y -i \"$videoPath\" -i \"$audioPath\" " +
-                "-filter_complex \"[1:a]adelay=${audioStartMs}|${audioStartMs},volume=$audioVolume[a]\" " +
-                "-map 0:v -map \"[a]\" -c:v copy -c:a aac -b:a 192k \"$outputPath\""
+        val command = arrayOf(
+            "-y",
+            "-i", videoPath,
+            "-i", audioPath,
+            "-filter_complex", "[1:a]adelay=${audioStartMs}|${audioStartMs},volume=$audioVolume[a]",
+            "-map", "0:v",
+            "-map", "[a]",
+            "-c:v", "copy",
+            "-c:a", "aac",
+            "-b:a", "192k",
+            outputPath
+        )
 
         executeCommand(command)
         outputPath
@@ -77,9 +103,16 @@ class FFmpegService @Inject constructor() {
         subtitlePath: String,
         outputPath: String
     ): String = withContext(Dispatchers.IO) {
-        val command = "-y -i \"$videoPath\" -vf subtitles=\"$subtitlePath\" " +
-                "-c:v ${FFmpegConstants.VIDEO_CODEC} -preset ultrafast " +
-                "-c:a aac -b:a 128k \"$outputPath\""
+        val command = arrayOf(
+            "-y",
+            "-i", videoPath,
+            "-vf", "subtitles=$subtitlePath",
+            "-c:v", FFmpegConstants.VIDEO_CODEC,
+            "-preset", "ultrafast",
+            "-c:a", "aac",
+            "-b:a", "128k",
+            outputPath
+        )
 
         executeCommand(command)
         outputPath
@@ -90,9 +123,15 @@ class FFmpegService @Inject constructor() {
         filter: String,
         outputPath: String
     ): String = withContext(Dispatchers.IO) {
-        val command = "-y -i \"$inputPath\" -vf \"$filter\" " +
-                "-c:v ${FFmpegConstants.VIDEO_CODEC} -preset ultrafast " +
-                "-c:a copy \"$outputPath\""
+        val command = arrayOf(
+            "-y",
+            "-i", inputPath,
+            "-vf", filter,
+            "-c:v", FFmpegConstants.VIDEO_CODEC,
+            "-preset", "ultrafast",
+            "-c:a", "copy",
+            outputPath
+        )
 
         executeCommand(command)
         outputPath
@@ -104,10 +143,16 @@ class FFmpegService @Inject constructor() {
         outputPath: String
     ): String = withContext(Dispatchers.IO) {
         val pts = 1.0 / speed
-        val command = "-y -i \"$inputPath\" -filter:v \"setpts=${pts}*PTS\" " +
-                "-filter:a \"atempo=$speed\" " +
-                "-c:v ${FFmpegConstants.VIDEO_CODEC} -preset ultrafast " +
-                "-c:a aac \"$outputPath\""
+        val command = arrayOf(
+            "-y",
+            "-i", inputPath,
+            "-filter:v", "setpts=${pts}*PTS",
+            "-filter:a", "atempo=$speed",
+            "-c:v", FFmpegConstants.VIDEO_CODEC,
+            "-preset", "ultrafast",
+            "-c:a", "aac",
+            outputPath
+        )
 
         executeCommand(command)
         outputPath
@@ -129,28 +174,18 @@ class FFmpegService @Inject constructor() {
             return@withContext inputPath
         }
 
-        val command = "-y -i \"$inputPath\" -vf \"$rotation\" " +
-                "-c:v ${FFmpegConstants.VIDEO_CODEC} -preset ultrafast " +
-                "-c:a copy \"$outputPath\""
+        val command = arrayOf(
+            "-y",
+            "-i", inputPath,
+            "-vf", rotation,
+            "-c:v", FFmpegConstants.VIDEO_CODEC,
+            "-preset", "ultrafast",
+            "-c:a", "copy",
+            outputPath
+        )
 
         executeCommand(command)
         outputPath
-    }
-
-    suspend fun getVideoInfo(path: String): VideoInfo? = withContext(Dispatchers.IO) {
-        try {
-            val session = FFprobeKit.getMediaInformation(path)
-            val info = session.mediaInformation ?: return@withContext null
-            
-            VideoInfo(
-                duration = info.duration?.toLongOrNull() ?: 0L,
-                width = info.width?.toIntOrNull() ?: 0,
-                height = info.height?.toIntOrNull() ?: 0,
-                bitrate = info.bitrate?.toIntOrNull() ?: 0
-            )
-        } catch (e: Exception) {
-            null
-        }
     }
 
     fun createSubtitleFile(subtitles: List<Subtitle>): String {
@@ -176,12 +211,12 @@ class FFmpegService @Inject constructor() {
         return String.format("%02d:%02d:%02d,%03d", hours, minutes, seconds, millis)
     }
 
-    private fun executeCommand(command: String): String {
-        val session: FFmpegSession = FFmpegKit.execute(command)
-        if (!ReturnCode.isSuccess(session.returnCode)) {
-            throw RuntimeException("FFmpeg execution failed: ${session.failStackTrace}")
+    private fun executeCommand(args: Array<String>): Int {
+        val returnCode = FFmpeg.execute(args)
+        if (returnCode != Config.RETURN_CODE_SUCCESS) {
+            throw RuntimeException("FFmpeg execution failed with return code: $returnCode")
         }
-        return session.output
+        return returnCode
     }
 
     private fun generateOutputPath(prefix: String): String {
