@@ -23,7 +23,7 @@ class ExportViewModel @Inject constructor(
     private val projectRepository: ProjectRepository,
     private val renderEngine: RenderEngine,
     private val fileUtils: FileUtils,
-    @ApplicationContext private val application: Application,
+    @ApplicationContext private val context: android.content.Context,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -127,7 +127,7 @@ class ExportViewModel @Inject constructor(
     private fun generateOutputPath(): String {
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val extension = _exportSettings.value.format.extension
-        val exportDir = fileUtils.getExportDirectory(application)
+        val exportDir = fileUtils.getExportDirectory(context)
         return File(exportDir, "video_$timestamp.$extension").absolutePath
     }
 }
