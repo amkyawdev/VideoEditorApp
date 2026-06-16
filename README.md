@@ -286,6 +286,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 | **Country** | Myanmar 🇲🇲 |
 | **Location** | Naypyidaw |
 | **Phone** | 09677740154 |
+| **TikTok** | [@amkyaw.dev1](https://tiktok.com/@amkyaw.dev1) |
 
 ---
 
@@ -294,6 +295,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 For questions and support, please contact:
 
 - **GitHub:** [@amkyawdev](https://github.com/amkyawdev)
+- **TikTok:** [@amkyaw.dev1](https://tiktok.com/@amkyaw.dev1)
 - **Phone:** 09677740154
 
 ---
