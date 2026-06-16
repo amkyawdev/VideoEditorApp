@@ -51,7 +51,7 @@ class TimelineFragment : Fragment() {
     }
 
     private fun updateZoomLevel() {
-        binding.tvZoomLevel.text = "${(binding.timelineView.zoomLevel * 100).toInt()}%"
+        binding.tvZoomLevel.text = "${(binding.timelineView.zoomLevelValue * 100).toInt()}%"
     }
 
     override fun onDestroyView() {

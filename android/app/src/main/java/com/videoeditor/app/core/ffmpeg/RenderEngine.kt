@@ -1,7 +1,5 @@
 package com.videoeditor.app.core.ffmpeg
 
-import com.arthenica.ffmpegkit.FFmpegKit
-import com.arthenica.ffmpegkit.ReturnCode
 import com.videoeditor.app.core.constants.FFmpegConstants
 import com.videoeditor.app.domain.model.AudioTrack
 import com.videoeditor.app.domain.model.Effect
@@ -67,16 +65,16 @@ class RenderEngine @Inject constructor(
 
         // Step 5: Final export with quality settings
         val finalPath = if (currentPath != outputPath) {
-            val exportPath = getTempPath("export")
-            videoProcessor.processVideo(currentPath, exportPath, settings, progressCallback)
+            val exportFilePath = getTempPath("export")
+            videoProcessor.processVideo(currentPath, exportFilePath, settings, progressCallback)
         } else {
             currentPath
         }
 
         // Move to final destination if different
-        if (exportPath != outputPath) {
-            File(exportPath).copyTo(File(outputPath), overwrite = true)
-            File(exportPath).delete()
+        if (finalPath != outputPath) {
+            File(finalPath).copyTo(File(outputPath), overwrite = true)
+            File(finalPath).delete()
         }
 
         outputPath

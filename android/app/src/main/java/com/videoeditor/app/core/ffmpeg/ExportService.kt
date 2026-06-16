@@ -9,6 +9,8 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.videoeditor.app.R
+import com.videoeditor.app.domain.model.ExportFormat
+import com.videoeditor.app.domain.model.ExportQuality
 import com.videoeditor.app.domain.model.ExportSettings
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
