@@ -44,30 +44,14 @@ jobs:
           cd android
           chmod +x gradlew
 
-      - name: Get version from tag
-        id: version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-
       - name: Build release APK
         run: |
           cd android
-          ./gradlew assembleRelease
-
-      - name: Sign APK
-        uses: r0adkll/sign-android-release@v1
-        with:
-          release-directory: android/app/build/outputs/apk/release
-          signing-certificate-base64: ${{ secrets.SIGNING_CERTIFICATE_BASE64 }}
-          signing-key-base64: ${{ secrets.SIGNING_KEY_BASE64 }}
-          alias: ${{ secrets.KEY_ALIAS }}
-          key-password: ${{ secrets.KEY_PASSWORD }}
-          store-password: ${{ secrets.STORE_PASSWORD }}
+          ./gradlew assembleRelease --no-daemon
 
       - name: Upload Release APK
-        uses: softprops/action-gh-release@v1
+        uses: actions/upload-artifact@v4
         with:
-          files: android/app/build/outputs/apk/release/*.apk
-          draft: true
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: release-apk
+          path: android/app/build/outputs/apk/release/**/*.apk
+          retention-days: 30

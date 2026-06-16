@@ -44,18 +44,15 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          cd ..
 
       - name: Build debug APK
-        uses: android/build apk@2
-        with:
-          release-type: debug
-          project-path: android
-          gradle-version: 8.2
-          build-type: debug
+        run: |
+          cd android
+          ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
+        if: success()
         with:
           name: app-debug.apk
           path: android/app/build/outputs/apk/debug/*.apk
@@ -63,7 +60,7 @@ jobs:
 
       - name: Upload Build Reports
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-reports
           path: android/app/build/reports
