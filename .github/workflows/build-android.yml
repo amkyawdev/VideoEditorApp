@@ -12,7 +12,7 @@ env:
 
 jobs:
   build:
-    name: Build Debug APK
+    name: Build Debug and Release APKs
     runs-on: ubuntu-latest
 
     steps:
@@ -58,15 +58,23 @@ jobs:
           cd android
           chmod +x gradlew
 
-      - name: Build debug APK
+      - name: Build debug & release APKs
         run: |
           cd android
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          ./gradlew assembleDebug assembleRelease --no-daemon --stacktrace
 
-      - name: Upload APK
+      - name: Upload Debug APK
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: app-debug.apk
           path: android/app/build/outputs/apk/debug/*.apk
+          retention-days: 30
+
+      - name: Upload Release APK (Unsigned)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-unsigned.apk
+          path: android/app/build/outputs/apk/release/*.apk
           retention-days: 30
