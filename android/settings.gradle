@@ -11,7 +11,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
-        maven { url 'https://github.com/nicologica/ffmpeg-kit-maven/raw/main' }
+        maven { url 'https://github.com/arthenica/ffmpeg-kit-maven/raw/main' }
     }
 }
 
