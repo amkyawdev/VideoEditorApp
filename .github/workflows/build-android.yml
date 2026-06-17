@@ -12,7 +12,7 @@ env:
 
 jobs:
   build:
-    name: Build Release APK
+    name: Build Debug APK
     runs-on: ubuntu-latest
 
     steps:
@@ -58,7 +58,7 @@ jobs:
           cd android
           chmod +x gradlew
 
-      - name: Build Release APK
+      - name: Build Debug APK
         run: |
           cd android
-          ./gradlew assembleRelease --no-daemon --stacktrace
+          ./gradlew assembleDebug --no-daemon --stacktrace
