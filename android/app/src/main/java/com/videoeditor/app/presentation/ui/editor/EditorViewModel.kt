@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.videoeditor.app.domain.model.*
+import com.videoeditor.app.domain.model.SubtitlePosition
 import com.videoeditor.app.domain.repository.MediaRepository
 import com.videoeditor.app.domain.repository.ProjectRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -147,6 +148,20 @@ class EditorViewModel @Inject constructor(
         }
     }
 
+    fun updateClipTransform(clip: VideoClip, speed: Float, rotation: Int, flipH: Boolean, flipV: Boolean) {
+        viewModelScope.launch {
+            val updatedClip = clip.copy(
+                speed = speed,
+                rotation = rotation,
+                flipHorizontal = flipH,
+                flipVertical = flipV
+            )
+            projectRepository.updateVideoClip(updatedClip)
+            _videoClips.value = projectRepository.getVideoClips(projectId)
+            _selectedClip.value = updatedClip
+        }
+    }
+
     fun addAudioTrack(uri: Uri, context: Context) {
         viewModelScope.launch {
             val duration = mediaRepository.getVideoDuration(uri)
@@ -166,15 +181,68 @@ class EditorViewModel @Inject constructor(
         }
     }
 
-    fun addSubtitle(text: String, startMs: Long, endMs: Long) {
+    fun updateAudioTrackVolume(track: AudioTrack, volume: Float) {
+        viewModelScope.launch {
+            val updatedTrack = track.copy(volume = volume)
+            projectRepository.updateAudioTrack(updatedTrack)
+            _audioTracks.value = projectRepository.getAudioTracks(projectId)
+        }
+    }
+
+    fun toggleAudioTrackMute(track: AudioTrack) {
+        viewModelScope.launch {
+            val updatedTrack = track.copy(isMuted = !track.isMuted)
+            projectRepository.updateAudioTrack(updatedTrack)
+            _audioTracks.value = projectRepository.getAudioTracks(projectId)
+        }
+    }
+
+    fun updateAudioTrackFade(track: AudioTrack, fadeInMs: Long, fadeOutMs: Long) {
+        viewModelScope.launch {
+            val updatedTrack = track.copy(fadeInMs = fadeInMs, fadeOutMs = fadeOutMs)
+            projectRepository.updateAudioTrack(updatedTrack)
+            _audioTracks.value = projectRepository.getAudioTracks(projectId)
+        }
+    }
+
+    fun deleteAudioTrack(track: AudioTrack) {
+        viewModelScope.launch {
+            projectRepository.deleteAudioTrack(track.id)
+            _audioTracks.value = projectRepository.getAudioTracks(projectId)
+        }
+    }
+
+    fun addSubtitle(text: String, startMs: Long, endMs: Long, position: SubtitlePosition = SubtitlePosition.BOTTOM) {
         viewModelScope.launch {
             val subtitle = Subtitle(
                 projectId = projectId,
                 text = text,
                 startTimeMs = startMs,
-                endTimeMs = endMs
+                endTimeMs = endMs,
+                position = position
             )
             projectRepository.insertSubtitle(subtitle)
+            _subtitles.value = projectRepository.getSubtitles(projectId)
+        }
+    }
+
+    fun updateSubtitleDetails(subtitle: Subtitle, text: String, startMs: Long, endMs: Long, position: SubtitlePosition) {
+        viewModelScope.launch {
+            val updatedSubtitle = subtitle.copy(
+                text = text,
+                startTimeMs = startMs,
+                endTimeMs = endMs,
+                position = position
+            )
+            projectRepository.updateSubtitle(updatedSubtitle)
+            _subtitles.value = projectRepository.getSubtitles(projectId)
+        }
+    }
+
+    fun toggleSubtitleVisibility(subtitle: Subtitle) {
+        viewModelScope.launch {
+            val updatedSubtitle = subtitle.copy(isVisible = !subtitle.isVisible)
+            projectRepository.updateSubtitle(updatedSubtitle)
             _subtitles.value = projectRepository.getSubtitles(projectId)
         }
     }

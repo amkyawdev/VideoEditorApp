@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.videoeditor.app.core.utils.ThumbnailGenerator
 import com.videoeditor.app.core.utils.VideoUtils
 import com.videoeditor.app.domain.model.Project
+import com.videoeditor.app.domain.model.VideoClip
 import com.videoeditor.app.domain.repository.MediaRepository
 import com.videoeditor.app.domain.repository.ProjectRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -53,9 +54,11 @@ class MainViewModel @Inject constructor(
             _isLoading.value = true
             try {
                 val videoInfo = VideoUtils.getVideoInfo(context, uri)
+                val duration = videoInfo?.duration ?: 0L
+                
                 val project = Project(
                     name = "New Project",
-                    duration = videoInfo?.duration ?: 0L,
+                    duration = duration,
                     videoClipCount = 1
                 )
                 
@@ -66,6 +69,16 @@ class MainViewModel @Inject constructor(
                 if (videoPath != null) {
                     // Create initial video clip
                     val thumbnail = mediaRepository.generateThumbnail(uri, 0)
+                    val clip = VideoClip(
+                        projectId = project.id,
+                        sourcePath = videoPath,
+                        thumbnailPath = thumbnail,
+                        duration = duration,
+                        endTime = duration,
+                        orderIndex = 0
+                    )
+                    projectRepository.insertVideoClip(clip)
+                    
                     // Update project with thumbnail
                     projectRepository.updateProject(
                         project.copy(thumbnailPath = thumbnail)

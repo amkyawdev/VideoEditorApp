@@ -161,11 +161,12 @@
     <LinearLayout
         android:id="@+id/bottomToolbar"
         android:layout_width="0dp"
-        android:layout_height="@dimen/bottom_bar_height"
+        android:layout_height="wrap_content"
         android:background="@color/surface"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="@dimen/spacing_sm"
+        android:paddingVertical="@dimen/spacing_xs"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -173,9 +174,9 @@
         <!-- Add Clip -->
         <ImageButton
             android:id="@+id/btnAddClip"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginHorizontal="@dimen/spacing_xs"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginHorizontal="2dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/action_add_clip"
             android:src="@drawable/ic_add"
@@ -184,9 +185,9 @@
         <!-- Trim -->
         <ImageButton
             android:id="@+id/btnTrim"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginHorizontal="@dimen/spacing_xs"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginHorizontal="2dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/action_trim"
             android:src="@drawable/ic_trim"
@@ -195,29 +196,62 @@
         <!-- Split -->
         <ImageButton
             android:id="@+id/btnSplit"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginHorizontal="@dimen/spacing_xs"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginHorizontal="2dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/action_split"
             android:src="@drawable/ic_split"
             app:tint="@color/on_surface" />
 
-        <!-- Delete -->
+        <!-- Volume -->
         <ImageButton
-            android:id="@+id/btnDelete"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginHorizontal="@dimen/spacing_xs"
+            android:id="@+id/btnVolume"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginHorizontal="2dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/action_delete"
-            android:src="@drawable/ic_delete"
-            app:tint="@color/error" />
+            android:contentDescription="Volume"
+            android:src="@drawable/ic_volume"
+            app:tint="@color/on_surface" />
+
+        <!-- Speed -->
+        <ImageButton
+            android:id="@+id/btnSpeed"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginHorizontal="2dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Speed"
+            android:src="@drawable/ic_speed"
+            app:tint="@color/on_surface" />
+
+        <!-- Transition -->
+        <ImageButton
+            android:id="@+id/btnTransition"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginHorizontal="2dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Transition"
+            android:src="@drawable/ic_transition"
+            app:tint="@color/on_surface" />
 
         <View
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="1" />
+
+        <!-- Delete -->
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginHorizontal="2dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/action_delete"
+            android:src="@drawable/ic_delete"
+            app:tint="@color/error" />
 
         <!-- Export Button -->
         <com.google.android.material.button.MaterialButton
@@ -225,6 +259,7 @@
             style="@style/Widget.VideoEditor.Button.Primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_sm"
             android:text="@string/title_export"
             app:icon="@drawable/ic_export"
             app:iconTint="@color/on_primary" />

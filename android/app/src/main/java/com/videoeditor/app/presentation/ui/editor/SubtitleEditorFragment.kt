@@ -4,10 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.slider.Slider
+import com.videoeditor.app.R
 import com.videoeditor.app.databinding.FragmentSubtitlesBinding
+import com.videoeditor.app.domain.model.Subtitle
+import com.videoeditor.app.domain.model.SubtitlePosition
+import com.videoeditor.app.presentation.adapter.SubtitleAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -19,6 +29,7 @@ class SubtitleEditorFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: EditorViewModel by activityViewModels()
+    private lateinit var subtitleAdapter: SubtitleAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,26 +43,161 @@ class SubtitleEditorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupUI()
+        setupSubtitleAdapter()
         observeSubtitles()
     }
 
     private fun setupUI() {
         binding.btnAddSubtitle.setOnClickListener {
-            // Show add subtitle dialog
             showAddSubtitleDialog()
+        }
+    }
+
+    private fun setupSubtitleAdapter() {
+        subtitleAdapter = SubtitleAdapter(
+            onEdit = { subtitle -> showEditSubtitleDialog(subtitle) },
+            onDelete = { subtitle -> viewModel.deleteSubtitle(subtitle) },
+            onVisibilityToggle = { subtitle -> viewModel.toggleSubtitleVisibility(subtitle) }
+        )
+
+        binding.rvSubtitles.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = subtitleAdapter
         }
     }
 
     private fun observeSubtitles() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.subtitles.collectLatest { subtitles ->
-                // Update RecyclerView with subtitles
+                subtitleAdapter.submitList(subtitles)
+                updateEmptyState(subtitles.isEmpty())
             }
         }
     }
 
+    private fun updateEmptyState(isEmpty: Boolean) {
+        binding.emptySubtitleState.visibility = if (isEmpty) View.VISIBLE else View.GONE
+        binding.rvSubtitles.visibility = if (isEmpty) View.GONE else View.VISIBLE
+    }
+
     private fun showAddSubtitleDialog() {
-        // Dialog implementation
+        val dialogView = createSubtitleDialogView(null)
+        
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Add Subtitle")
+            .setView(dialogView)
+            .setPositiveButton("Add") { _, _ ->
+                val text = (dialogView.findViewById(R.id.etSubtitleText) as EditText).text.toString()
+                val startTime = (dialogView.findViewById(R.id.sliderStartTime) as Slider).value.toLong() * 1000
+                val endTime = (dialogView.findViewById(R.id.sliderEndTime) as Slider).value.toLong() * 1000
+                val position = getSelectedPosition(dialogView)
+                
+                if (text.isNotBlank()) {
+                    viewModel.addSubtitle(text, startTime, endTime, position)
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showEditSubtitleDialog(subtitle: Subtitle) {
+        val dialogView = createSubtitleDialogView(subtitle)
+        
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Edit Subtitle")
+            .setView(dialogView)
+            .setPositiveButton("Save") { _, _ ->
+                val text = (dialogView.findViewById(R.id.etSubtitleText) as EditText).text.toString()
+                val startTime = (dialogView.findViewById(R.id.sliderStartTime) as Slider).value.toLong() * 1000
+                val endTime = (dialogView.findViewById(R.id.sliderEndTime) as Slider).value.toLong() * 1000
+                val position = getSelectedPosition(dialogView)
+                
+                if (text.isNotBlank()) {
+                    viewModel.updateSubtitleDetails(subtitle, text, startTime, endTime, position)
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun createSubtitleDialogView(subtitle: Subtitle?): View {
+        val context = requireContext()
+        val padding = resources.getDimensionPixelSize(R.dimen.spacing_md)
+        
+        val layout = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(padding, padding, padding, padding)
+        }
+        
+        // Subtitle Text Input
+        val textInput = EditText(context).apply {
+            id = R.id.etSubtitleText
+            hint = "Enter subtitle text"
+            setText(subtitle?.text ?: "")
+        }
+        layout.addView(textInput)
+        
+        // Start Time Slider
+        val startLabel = android.widget.TextView(context).apply {
+            text = "Start Time: 0s"
+            setTextColor(context.getColor(R.color.text_primary))
+        }
+        layout.addView(startLabel)
+        
+        val startSlider = com.google.android.material.slider.Slider(context).apply {
+            id = R.id.sliderStartTime
+            valueFrom = 0f
+            valueTo = 60f
+            value = (subtitle?.startTimeMs ?: 0) / 1000f
+            addOnChangeListener { _, value, _ ->
+                startLabel.text = "Start Time: ${value.toInt()}s"
+            }
+        }
+        layout.addView(startSlider)
+        
+        // End Time Slider
+        val endLabel = android.widget.TextView(context).apply {
+            text = "End Time: 5s"
+            setTextColor(context.getColor(R.color.text_primary))
+        }
+        layout.addView(endLabel)
+        
+        val endSlider = com.google.android.material.slider.Slider(context).apply {
+            id = R.id.sliderEndTime
+            valueFrom = 0f
+            valueTo = 60f
+            value = (subtitle?.endTimeMs ?: 5000) / 1000f
+            addOnChangeListener { _, value, _ ->
+                endLabel.text = "End Time: ${value.toInt()}s"
+            }
+        }
+        layout.addView(endSlider)
+        
+        // Position Spinner
+        val positionLabel = android.widget.TextView(context).apply {
+            text = "Position"
+            setTextColor(context.getColor(R.color.text_primary))
+        }
+        layout.addView(positionLabel)
+        
+        val positions = SubtitlePosition.values().map { it.name }
+        val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, positions)
+        val spinner = android.widget.Spinner(context).apply {
+            setAdapter(adapter)
+            setSelection(subtitle?.position?.ordinal ?: 2)
+        }
+        layout.addView(spinner)
+        
+        return layout
+    }
+    
+    private fun getSelectedPosition(dialogView: View): SubtitlePosition {
+        val spinner = dialogView.findViewById(R.id.spinnerPosition) as? android.widget.Spinner
+        return if (spinner != null) {
+            SubtitlePosition.values()[spinner.selectedItemPosition]
+        } else {
+            SubtitlePosition.BOTTOM
+        }
     }
 
     override fun onDestroyView() {

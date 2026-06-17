@@ -32,6 +32,41 @@
 
     </LinearLayout>
 
+    <!-- Empty State -->
+    <LinearLayout
+        android:id="@+id/emptyAudioState"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:alpha="0.5"
+            android:src="@drawable/ic_audio"
+            app:tint="@color/text_secondary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:text="No audio tracks"
+            android:textColor="@color/text_secondary"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:text="Tap + to add background music"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
     <!-- Audio Tracks List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvAudioTracks"
@@ -40,119 +75,5 @@
         android:layout_marginTop="@dimen/spacing_md"
         android:layout_weight="1"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
-    <!-- Audio Track Item Template -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardAudioTrackTemplate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_md"
-        android:visibility="gone"
-        app:cardBackgroundColor="@color/surface"
-        app:cardCornerRadius="@dimen/corner_radius_md">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/spacing_md">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="@drawable/bg_thumbnail_placeholder"
-                    android:padding="@dimen/spacing_sm"
-                    android:src="@drawable/ic_audio"
-                    app:tint="@color/secondary" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/spacing_md"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tvAudioName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:maxLines="1"
-                        android:text="Audio Track"
-                        android:textColor="@color/text_primary" />
-
-                    <TextView
-                        android:id="@+id/tvAudioDuration"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="00:00 - 00:30"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
-
-                <ImageButton
-                    android:id="@+id/btnMuteAudio"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_volume"
-                    app:tint="@color/on_surface" />
-
-                <ImageButton
-                    android:id="@+id/btnDeleteAudio"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_delete"
-                    app:tint="@color/error" />
-
-            </LinearLayout>
-
-            <!-- Volume Slider -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_sm"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_volume"
-                    app:tint="@color/text_secondary" />
-
-                <com.google.android.material.slider.Slider
-                    android:id="@+id/sliderVolume"
-                    style="@style/Widget.VideoEditor.Slider"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/spacing_sm"
-                    android:layout_weight="1"
-                    android:value="80"
-                    android:valueFrom="0"
-                    android:valueTo="100" />
-
-                <TextView
-                    android:id="@+id/tvVolumeValue"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="end"
-                    android:text="80%"
-                    android:textColor="@color/text_primary"
-                    android:textSize="12sp" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>
