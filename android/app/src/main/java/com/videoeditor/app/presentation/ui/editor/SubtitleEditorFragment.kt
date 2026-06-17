@@ -82,16 +82,17 @@ class SubtitleEditorFragment : Fragment() {
     }
 
     private fun showAddSubtitleDialog() {
-        val dialogView = createSubtitleDialogView(null)
+        val views = mutableMapOf<String, Any>()
+        val dialogView = createSubtitleDialogView(null, views)
         
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Add Subtitle")
             .setView(dialogView)
             .setPositiveButton("Add") { _, _ ->
-                val textInput = dialogView.findViewById<EditText>(R.id.etSubtitleText)
-                val startSlider = dialogView.findViewById<Slider>(R.id.sliderStartTime)
-                val endSlider = dialogView.findViewById<Slider>(R.id.sliderEndTime)
-                val spinner = dialogView.findViewById<Spinner>(R.id.spinnerPosition)
+                val textInput = views["textInput"] as? EditText
+                val startSlider = views["startSlider"] as? Slider
+                val endSlider = views["endSlider"] as? Slider
+                val spinner = views["spinner"] as? Spinner
                 
                 val text = textInput?.text?.toString() ?: ""
                 val startTime = (startSlider?.value ?: 0f).toLong() * 1000
@@ -107,16 +108,17 @@ class SubtitleEditorFragment : Fragment() {
     }
 
     private fun showEditSubtitleDialog(subtitle: Subtitle) {
-        val dialogView = createSubtitleDialogView(subtitle)
+        val views = mutableMapOf<String, Any>()
+        val dialogView = createSubtitleDialogView(subtitle, views)
         
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Edit Subtitle")
             .setView(dialogView)
             .setPositiveButton("Save") { _, _ ->
-                val textInput = dialogView.findViewById<EditText>(R.id.etSubtitleText)
-                val startSlider = dialogView.findViewById<Slider>(R.id.sliderStartTime)
-                val endSlider = dialogView.findViewById<Slider>(R.id.sliderEndTime)
-                val spinner = dialogView.findViewById<Spinner>(R.id.spinnerPosition)
+                val textInput = views["textInput"] as? EditText
+                val startSlider = views["startSlider"] as? Slider
+                val endSlider = views["endSlider"] as? Slider
+                val spinner = views["spinner"] as? Spinner
                 
                 val text = textInput?.text?.toString() ?: ""
                 val startTime = (startSlider?.value ?: 0f).toLong() * 1000
@@ -131,7 +133,7 @@ class SubtitleEditorFragment : Fragment() {
             .show()
     }
 
-    private fun createSubtitleDialogView(subtitle: Subtitle?): View {
+    private fun createSubtitleDialogView(subtitle: Subtitle?, views: MutableMap<String, Any>): View {
         val context = requireContext()
         val padding = resources.getDimensionPixelSize(R.dimen.spacing_md)
         
@@ -142,10 +144,10 @@ class SubtitleEditorFragment : Fragment() {
         
         // Subtitle Text Input
         val textInput = EditText(context).apply {
-            id = R.id.etSubtitleText
             hint = "Enter subtitle text"
             setText(subtitle?.text ?: "")
         }
+        views["textInput"] = textInput
         layout.addView(textInput)
         
         // Start Time Slider
@@ -155,8 +157,7 @@ class SubtitleEditorFragment : Fragment() {
         }
         layout.addView(startLabel)
         
-        val startSlider = com.google.android.material.slider.Slider(context).apply {
-            id = R.id.sliderStartTime
+        val startSlider = Slider(context).apply {
             valueFrom = 0f
             valueTo = 60f
             value = (subtitle?.startTimeMs ?: 0) / 1000f
@@ -164,6 +165,7 @@ class SubtitleEditorFragment : Fragment() {
                 startLabel.text = "Start Time: ${value.toInt()}s"
             }
         }
+        views["startSlider"] = startSlider
         layout.addView(startSlider)
         
         // End Time Slider
@@ -173,8 +175,7 @@ class SubtitleEditorFragment : Fragment() {
         }
         layout.addView(endLabel)
         
-        val endSlider = com.google.android.material.slider.Slider(context).apply {
-            id = R.id.sliderEndTime
+        val endSlider = Slider(context).apply {
             valueFrom = 0f
             valueTo = 60f
             value = (subtitle?.endTimeMs ?: 5000) / 1000f
@@ -182,6 +183,7 @@ class SubtitleEditorFragment : Fragment() {
                 endLabel.text = "End Time: ${value.toInt()}s"
             }
         }
+        views["endSlider"] = endSlider
         layout.addView(endSlider)
         
         // Position Spinner
@@ -194,10 +196,10 @@ class SubtitleEditorFragment : Fragment() {
         val positions = SubtitlePosition.values().map { it.name }
         val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, positions)
         val spinner = Spinner(context).apply {
-            id = R.id.spinnerPosition
             setAdapter(adapter)
             setSelection(subtitle?.position?.ordinal ?: 2)
         }
+        views["spinner"] = spinner
         layout.addView(spinner)
         
         return layout
