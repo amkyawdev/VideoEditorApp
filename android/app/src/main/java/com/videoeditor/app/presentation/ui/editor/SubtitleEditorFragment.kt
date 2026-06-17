@@ -4,9 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.LinearLayout
-import android.widget.ArrayAdapter
+import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -87,10 +88,15 @@ class SubtitleEditorFragment : Fragment() {
             .setTitle("Add Subtitle")
             .setView(dialogView)
             .setPositiveButton("Add") { _, _ ->
-                val text = (dialogView.findViewById(R.id.etSubtitleText) as EditText).text.toString()
-                val startTime = (dialogView.findViewById(R.id.sliderStartTime) as Slider).value.toLong() * 1000
-                val endTime = (dialogView.findViewById(R.id.sliderEndTime) as Slider).value.toLong() * 1000
-                val position = getSelectedPosition(dialogView)
+                val textInput = dialogView.findViewById<EditText>(R.id.etSubtitleText)
+                val startSlider = dialogView.findViewById<Slider>(R.id.sliderStartTime)
+                val endSlider = dialogView.findViewById<Slider>(R.id.sliderEndTime)
+                val spinner = dialogView.findViewById<Spinner>(R.id.spinnerPosition)
+                
+                val text = textInput?.text?.toString() ?: ""
+                val startTime = (startSlider?.value ?: 0f).toLong() * 1000
+                val endTime = (endSlider?.value ?: 5f).toLong() * 1000
+                val position = if (spinner != null) SubtitlePosition.values()[spinner.selectedItemPosition] else SubtitlePosition.BOTTOM
                 
                 if (text.isNotBlank()) {
                     viewModel.addSubtitle(text, startTime, endTime, position)
@@ -107,10 +113,15 @@ class SubtitleEditorFragment : Fragment() {
             .setTitle("Edit Subtitle")
             .setView(dialogView)
             .setPositiveButton("Save") { _, _ ->
-                val text = (dialogView.findViewById(R.id.etSubtitleText) as EditText).text.toString()
-                val startTime = (dialogView.findViewById(R.id.sliderStartTime) as Slider).value.toLong() * 1000
-                val endTime = (dialogView.findViewById(R.id.sliderEndTime) as Slider).value.toLong() * 1000
-                val position = getSelectedPosition(dialogView)
+                val textInput = dialogView.findViewById<EditText>(R.id.etSubtitleText)
+                val startSlider = dialogView.findViewById<Slider>(R.id.sliderStartTime)
+                val endSlider = dialogView.findViewById<Slider>(R.id.sliderEndTime)
+                val spinner = dialogView.findViewById<Spinner>(R.id.spinnerPosition)
+                
+                val text = textInput?.text?.toString() ?: ""
+                val startTime = (startSlider?.value ?: 0f).toLong() * 1000
+                val endTime = (endSlider?.value ?: 5f).toLong() * 1000
+                val position = if (spinner != null) SubtitlePosition.values()[spinner.selectedItemPosition] else SubtitlePosition.BOTTOM
                 
                 if (text.isNotBlank()) {
                     viewModel.updateSubtitleDetails(subtitle, text, startTime, endTime, position)
@@ -139,7 +150,7 @@ class SubtitleEditorFragment : Fragment() {
         
         // Start Time Slider
         val startLabel = android.widget.TextView(context).apply {
-            text = "Start Time: 0s"
+            text = "Start Time: ${(subtitle?.startTimeMs ?: 0) / 1000}s"
             setTextColor(context.getColor(R.color.text_primary))
         }
         layout.addView(startLabel)
@@ -157,7 +168,7 @@ class SubtitleEditorFragment : Fragment() {
         
         // End Time Slider
         val endLabel = android.widget.TextView(context).apply {
-            text = "End Time: 5s"
+            text = "End Time: ${(subtitle?.endTimeMs ?: 5000) / 1000}s"
             setTextColor(context.getColor(R.color.text_primary))
         }
         layout.addView(endLabel)
@@ -182,22 +193,14 @@ class SubtitleEditorFragment : Fragment() {
         
         val positions = SubtitlePosition.values().map { it.name }
         val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, positions)
-        val spinner = android.widget.Spinner(context).apply {
+        val spinner = Spinner(context).apply {
+            id = R.id.spinnerPosition
             setAdapter(adapter)
             setSelection(subtitle?.position?.ordinal ?: 2)
         }
         layout.addView(spinner)
         
         return layout
-    }
-    
-    private fun getSelectedPosition(dialogView: View): SubtitlePosition {
-        val spinner = dialogView.findViewById(R.id.spinnerPosition) as? android.widget.Spinner
-        return if (spinner != null) {
-            SubtitlePosition.values()[spinner.selectedItemPosition]
-        } else {
-            SubtitlePosition.BOTTOM
-        }
     }
 
     override fun onDestroyView() {
